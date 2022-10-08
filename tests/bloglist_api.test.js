@@ -59,7 +59,7 @@ describe('POST request to /api/blogs', () => {
       title: 'Nearly All Are Mad',
       author: 'Adamu Igbo',
       url: 'https://google.com',
-      likes: 54
+      likes: 54,
     }
 
     await api
@@ -71,7 +71,7 @@ describe('POST request to /api/blogs', () => {
     const listInDb = await helper.bloglistInDb()
     expect(listInDb.length).toBe(helper.initialBloglist.length + 1)
 
-    const contents = listInDb.map(blog => blog.title)
+    const contents = listInDb.map((blog) => blog.title)
     expect(contents).toContain('Nearly All Are Mad')
   })
 })
@@ -91,6 +91,34 @@ describe('POST request to /api/blogs without likes property', () => {
       .expect('Content-Type', /application\/json/)
 
     expect(response.body.likes).toBe(0)
+  })
+})
+
+describe('POST request to /api/blogs without', () => {
+  test('title property responds with 400 Bad Request', async () => {
+    const newBlog = {
+      author: 'Kanye West',
+      url: 'https://shop.kanyewest.com',
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+  })
+
+  test('url property responds with 400 Bad Request', async () => {
+    const newBlog = {
+      title: 'My Beautiful Dark Twisted Fantasy',
+      author: 'Kanye West',
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
   })
 })
 
