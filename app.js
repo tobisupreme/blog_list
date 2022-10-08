@@ -6,10 +6,15 @@ const { MONGODB_URI } = require('./utils/config')
 const blogListRouter = require('./controllers/bloglist')
 const { info, error } = require('./utils/logger')
 
-mongoose
-  .connect(MONGODB_URI)
-  .then(() => info('Connected to database'))
-  .catch((err) => error('failed to connect', err.message))
+const connect = async () => {
+  try {
+    mongoose.connect(MONGODB_URI)
+    info('Connected to database')
+  } catch (err) {
+    error('failed to connect', err.message)
+  }
+}
+connect()
 
 app.use(cors())
 app.use(express.json())

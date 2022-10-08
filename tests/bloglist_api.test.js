@@ -59,7 +59,7 @@ describe('POST request to /api/blogs', () => {
       title: 'Nearly All Are Mad',
       author: 'Adamu Igbo',
       url: 'https://google.com',
-      likes: '54'
+      likes: 54
     }
 
     await api
@@ -73,6 +73,24 @@ describe('POST request to /api/blogs', () => {
 
     const contents = listInDb.map(blog => blog.title)
     expect(contents).toContain('Nearly All Are Mad')
+  })
+})
+
+describe('POST request to /api/blogs without likes property', () => {
+  test('defaults likes property to the value 0', async () => {
+    const newBlog = {
+      title: 'My Beautiful Dark Twisted Fantasy',
+      author: 'Kanye West',
+      url: 'https://shop.kanyewest.com',
+    }
+
+    const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    expect(response.body.likes).toBe(0)
   })
 })
 
