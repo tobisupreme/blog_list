@@ -53,6 +53,29 @@ describe('GET request to /api/blogs', () => {
   })
 })
 
+describe('POST request to /api/blogs', () => {
+  test('successfully creates a new blog post', async () => {
+    const newBlog = {
+      title: 'Nearly All Are Mad',
+      author: 'Adamu Igbo',
+      url: 'https://google.com',
+      likes: '54'
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const listInDb = await helper.bloglistInDb()
+    expect(listInDb.length).toBe(helper.initialBloglist.length + 1)
+
+    const contents = listInDb.map(blog => blog.title)
+    expect(contents).toContain('Nearly All Are Mad')
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
