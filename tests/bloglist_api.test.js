@@ -33,6 +33,26 @@ describe('test the /api/blogs endpoints', () => {
   })
 })
 
+describe('GET request to /api/blogs', () => {
+  const URL = '/api/blogs'
+  test('returns the correct amount of blog posts', async () => {
+    const listInDb = await helper.bloglistInDb()
+
+    const response = await api
+      .get(URL)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    expect(response.body.length).toBe(listInDb.length)
+  })
+
+  test('returns objects with an "id" property', async () => {
+    const response = await api.get(URL)
+
+    expect(response.body[0].id).toBeDefined()
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
