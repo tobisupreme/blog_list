@@ -7,10 +7,7 @@ const helper = require('./test_helper')
 
 beforeEach(async () => {
   await Bloglist.deleteMany({})
-
-  const bloglistObject = helper.initialBloglist.map((li) => new Bloglist(li))
-  const bloglistArray = bloglistObject.map((li) => li.save())
-  await Promise.all(bloglistArray)
+  await Bloglist.insertMany(helper.initialBloglist)
 })
 
 describe('check environment variables', () => {
@@ -119,6 +116,21 @@ describe('POST request to /api/blogs without', () => {
       .send(newBlog)
       .expect(400)
       .expect('Content-Type', /application\/json/)
+  })
+})
+
+describe('deletion of a blog', () => {
+  test('succeeds with status code 204 if id is valid', async () => {
+    const listInDb = await helper.bloglistInDb()
+    const blogToDelete = listInDb[0]
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+
+    const listInDbAfterDelete = await helper.bloglistInDb()
+    expect(listInDbAfterDelete).toHaveLength(listInDb.length - 1)
+
+    const contents = listInDbAfterDelete.map(blog => blog.title)
+    expect(contents).not.toContain(blogToDelete.title)
   })
 })
 
