@@ -36,5 +36,13 @@ router
       res.status(500).json({ message: err.message })
     }
   })
+  .patch(async (req, res) => {
+    try {
+      const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, { likes: req.body.likes }, { new: true, runValidators: true, context: 'query' })
+      res.json(updatedBlog)
+    } catch (err) {
+      res.status(500).json({ message: err.message })
+    }
+  })
 
 module.exports = router

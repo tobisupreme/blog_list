@@ -134,6 +134,22 @@ describe('deletion of a blog', () => {
   })
 })
 
+describe('updating a blog', () => {
+  test('succeeds with status code 200 if id is valid', async () => {
+    const listInDb = await helper.bloglistInDb()
+    const blogToUpdate = listInDb[0]
+    const update = { likes: 40 }
+
+    const response = await api
+      .patch(`/api/blogs/${blogToUpdate.id}`)
+      .send(update)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    expect(response.body.likes).toBe(update.likes)
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
