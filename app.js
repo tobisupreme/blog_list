@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const { MONGODB_URI } = require('./utils/config')
 const blogListRouter = require('./controllers/bloglist')
 const userRouter = require('./controllers/users')
+const loginRouter = require('./controllers/login')
 const { info, error } = require('./utils/logger')
 
 const connect = async () => {
@@ -20,6 +21,7 @@ connect()
 app.use(cors())
 app.use(express.json())
 
+app.use('/api/login', loginRouter)
 app.use('/api/users', userRouter)
 app.use('/api/blogs', blogListRouter)
 

@@ -23,7 +23,7 @@ router
     const userIds = users.map((user) => user._id)
     const userId = getRandom(userIds)
     const user = await User.findById(userId)
-    console.log(user)
+
     req.body.user = user._id
 
     try {
