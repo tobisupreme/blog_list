@@ -40,7 +40,16 @@ router
   .route('/:id')
   .delete(async (req, res, next) => {
     try {
-      await Blog.findByIdAndRemove(req.params.id)
+      const currUser = jwt.verify(req.token, process.env.SECRET)
+      const blogToDelete = await Blog.findById(req.params.id)
+
+      if (!(currUser.id.toString() === blogToDelete.user.toString())) {
+        return res.status(403).json({
+          error: 'unauthorised'
+        })
+      }
+
+      await blogToDelete.remove()
       res.status(204).end()
     } catch (err) {
       next(err)
