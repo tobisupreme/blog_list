@@ -175,6 +175,24 @@ describe('creating a new user', () => {
     const content = usersAtEnd.map((user) => user.username)
     expect(content).toContain(newUser.username)
   })
+
+  test('fails with status code 400 if invalid parameters are supplied', async () => {
+    const usersAtStart = await helper.usersInDb()
+    const newUser = {
+      username: 'to',
+      name: 'Tobi Supreme',
+      password: 'pa'
+    }
+
+    await api
+      .post('/api/users/')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd.length).toBe(usersAtStart.length)
+  })
 })
 
 describe('GET request to /api/users', () => {

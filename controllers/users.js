@@ -12,21 +12,21 @@ router
     const { username, name, password } = req.body
     const existingUser = await User.findOne({ username })
 
+    if (!(username && password)) {
+      return res.status(400).json({
+        error: 'username/password cannot be blank'
+      })
+    }
+
     if (existingUser) {
       return res.status(400).json({
         error: 'username must be unique'
       })
     }
 
-    if (username.length < 5) {
+    if (username.length < 3 || password.length < 3) {
       return res.status(400).json({
-        error: 'username must contain at least 5 characters'
-      })
-    }
-
-    if (password.length < 6) {
-      return res.status(400).json({
-        error: 'password must contain at least 6 characters'
+        error: 'username/password must contain at least 3 characters'
       })
     }
 
