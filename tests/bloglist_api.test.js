@@ -3,11 +3,14 @@ const app = require('../app')
 const supertest = require('supertest')
 const api = supertest(app)
 const Bloglist = require('../models/bloglist')
+const User = require('../models/users')
 const helper = require('./test_helper')
 
 beforeEach(async () => {
   await Bloglist.deleteMany({})
   await Bloglist.insertMany(helper.initialBloglist)
+
+  await User.deleteMany({})
 })
 
 describe('check environment variables', () => {
@@ -147,6 +150,31 @@ describe('updating a blog', () => {
       .expect('Content-Type', /application\/json/)
 
     expect(response.body.likes).toBe(update.likes)
+  })
+})
+
+describe('creating a new user', () => {
+  test('succeeds with status code 201', async () => {
+    const usersAtStart = await helper.usersInDb()
+    const newUser = {
+      username: 'tobisupreme',
+      name: 'Tobi Supreme',
+      password: 'password1'
+    }
+
+    const response = await api
+      .post('/api/users/')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    expect(Object.keys(response.body)).toContain('blogs')
+
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd.length).toBe(usersAtStart.length + 1)
+
+    const content = usersAtEnd.map((user) => user.username)
+    expect(content).toContain(newUser.username)
   })
 })
 
