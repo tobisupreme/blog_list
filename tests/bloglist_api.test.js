@@ -11,6 +11,7 @@ beforeEach(async () => {
   await Bloglist.insertMany(helper.initialBloglist)
 
   await User.deleteMany({})
+  await User.insertMany(helper.initialUsers)
 })
 
 describe('check environment variables', () => {
@@ -162,19 +163,31 @@ describe('creating a new user', () => {
       password: 'password1'
     }
 
-    const response = await api
+    await api
       .post('/api/users/')
       .send(newUser)
       .expect(201)
       .expect('Content-Type', /application\/json/)
-
-    expect(Object.keys(response.body)).toContain('blogs')
 
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd.length).toBe(usersAtStart.length + 1)
 
     const content = usersAtEnd.map((user) => user.username)
     expect(content).toContain(newUser.username)
+  })
+})
+
+describe('GET request to /api/users', () => {
+  const URL = '/api/users'
+  test('returns the correct amount of users', async () => {
+    const usersInDb = await helper.usersInDb()
+
+    const response = await api
+      .get(URL)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    expect(response.body.length).toBe(usersInDb.length)
   })
 })
 
