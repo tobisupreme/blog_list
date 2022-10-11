@@ -7,7 +7,7 @@ const blogListRouter = require('./controllers/bloglist')
 const userRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
 const { info, error } = require('./utils/logger')
-const tokenExtractor = require('./utils/middleware').getToken
+const { getToken, errorHandler } = require('./utils/middleware')
 
 const connect = async () => {
   try {
@@ -25,8 +25,10 @@ app.use(express.json())
 app.use('/api/login', loginRouter)
 app.use('/api/users', userRouter)
 
-app.use(tokenExtractor)
+app.use(getToken)
 
 app.use('/api/blogs', blogListRouter)
+
+app.use(errorHandler)
 
 module.exports = app

@@ -14,7 +14,28 @@ const getToken = (req, res, next) => {
   return next()
 }
 
+const errorHandler = (error, req, res, next) => {
+  if (error.name === 'JsonWebTokenError') {
+    return res.status(400).json({
+      error: 'invalid token',
+    })
+  }
+
+  if (error.name === 'TokenExpiredError') {
+    return res.status(400).json({
+      error: 'token expired',
+    })
+  }
+
+  res.status(400).json({
+    error: error.message,
+  })
+
+  next()
+}
+
 module.exports = {
   getRandom,
-  getToken
+  getToken,
+  errorHandler
 }

@@ -6,15 +6,15 @@ const jwt = require('jsonwebtoken')
 
 router
   .route('/')
-  .get(async (req, res) => {
+  .get(async (req, res, next) => {
     try {
       const bloglist = await Blog.find({}).populate('user', { username: 1, name: 1 })
       res.json(bloglist)
     } catch (err) {
-      res.status(500).json({ message: err.message })
+      next(err)
     }
   })
-  .post(async (req, res) => {
+  .post(async (req, res, next) => {
     if (!req.body.title || !req.body.url) {
       return res.status(400).json({ message: 'Bring correct params' })
     }
@@ -32,26 +32,26 @@ router
 
       res.status(201).json(savedBlog)
     } catch (err) {
-      res.status(500).json({ message: err.message })
+      next(err)
     }
   })
 
 router
   .route('/:id')
-  .delete(async (req, res) => {
+  .delete(async (req, res, next) => {
     try {
       await Blog.findByIdAndRemove(req.params.id)
       res.status(204).end()
     } catch (err) {
-      res.status(500).json({ message: err.message })
+      next(err)
     }
   })
-  .patch(async (req, res) => {
+  .patch(async (req, res, next) => {
     try {
       const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, { likes: req.body.likes }, { new: true, runValidators: true, context: 'query' })
       res.json(updatedBlog)
     } catch (err) {
-      res.status(500).json({ message: err.message })
+      next(err)
     }
   })
 
