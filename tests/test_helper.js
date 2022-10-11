@@ -62,10 +62,51 @@ const initialUsers = [
   {
     username: 'admin',
     name: 'Super User',
+    _id: '6344c5454ce3286e04013c84',
     passwordHash: async () => {
       return await bcrypt.hash('password', 10)
-    }
-  }
+    },
+  },
+  {
+    username: 'user1',
+    name: 'User 1',
+    _id: '6344c5454ce3286e04013c85',
+    passwordHash: async () => {
+      return await bcrypt.hash('password1', 10)
+    },
+  },
+  {
+    username: 'user2',
+    name: 'User 2',
+    _id: '6344c5454ce3286e04013c86',
+    passwordHash: async () => {
+      return await bcrypt.hash('password2', 10)
+    },
+  },
+  {
+    username: 'user3',
+    name: 'User 3',
+    _id: '6344c5454ce3286e04013c87',
+    passwordHash: async () => {
+      return await bcrypt.hash('password3', 10)
+    },
+  },
+  {
+    username: 'user4',
+    name: 'User 4',
+    _id: '6344c5454ce3286e04013c88',
+    passwordHash: async () => {
+      return await bcrypt.hash('password4', 10)
+    },
+  },
+  {
+    username: 'user5',
+    name: 'User 5',
+    _id: '6344c5454ce3286e04013c89',
+    passwordHash: async () => {
+      return await bcrypt.hash('password5', 10)
+    },
+  },
 ]
 
 const usersInDb = async () => {
@@ -77,5 +118,5 @@ module.exports = {
   initialBloglist,
   bloglistInDb,
   usersInDb,
-  initialUsers
+  initialUsers,
 }

@@ -1,12 +1,14 @@
 const { Router } = require('express')
 const router = new Router()
 const Blog = require('../models/bloglist')
+const User = require('../models/users')
+const getRandom = require('../utils/middleware').getRandom
 
 router
   .route('/')
   .get(async (req, res) => {
     try {
-      const bloglist = await Blog.find({})
+      const bloglist = await Blog.find({}).populate('user', { username: 1, name: 1 })
       res.json(bloglist)
     } catch (err) {
       res.status(500).json({ message: err.message })
@@ -17,10 +19,21 @@ router
       return res.status(400).json({ message: 'Bring correct params' })
     }
 
+    const users = await User.find({})
+    const userIds = users.map((user) => user._id)
+    const userId = getRandom(userIds)
+    const user = await User.findById(userId)
+    console.log(user)
+    req.body.user = user._id
+
     try {
       const blog = new Blog(req.body)
-      const result = await blog.save()
-      res.status(201).json(result)
+      const savedBlog = await blog.save()
+
+      user.blogs = user.blogs.concat(savedBlog._id)
+      await user.save()
+
+      res.status(201).json(savedBlog)
     } catch (err) {
       res.status(500).json({ message: err.message })
     }

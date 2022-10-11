@@ -163,11 +163,13 @@ describe('creating a new user', () => {
       password: 'password1'
     }
 
-    await api
+    const response = await api
       .post('/api/users/')
       .send(newUser)
       .expect(201)
       .expect('Content-Type', /application\/json/)
+
+    expect(Object.keys(response.body)).toContain('blogs')
 
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd.length).toBe(usersAtStart.length + 1)
