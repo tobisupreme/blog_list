@@ -2,7 +2,7 @@ const { Router } = require('express')
 const router = new Router()
 const Blog = require('../models/bloglist')
 const User = require('../models/users')
-const getRandom = require('../utils/middleware').getRandom
+const jwt = require('jsonwebtoken')
 
 router
   .route('/')
@@ -19,14 +19,11 @@ router
       return res.status(400).json({ message: 'Bring correct params' })
     }
 
-    const users = await User.find({})
-    const userIds = users.map((user) => user._id)
-    const userId = getRandom(userIds)
-    const user = await User.findById(userId)
-
-    req.body.user = user._id
-
     try {
+      const decodedToken = jwt.verify(req.token, process.env.SECRET)
+      const user = await User.findById(decodedToken.id)
+
+      req.body.user = user._id
       const blog = new Blog(req.body)
       const savedBlog = await blog.save()
 
