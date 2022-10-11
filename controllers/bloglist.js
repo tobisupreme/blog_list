@@ -1,8 +1,7 @@
 const { Router } = require('express')
 const router = new Router()
 const Blog = require('../models/bloglist')
-const User = require('../models/users')
-const jwt = require('jsonwebtoken')
+const { getUser, checkId } = require('../utils/middleware')
 
 router
   .route('/')
@@ -14,14 +13,13 @@ router
       next(err)
     }
   })
-  .post(async (req, res, next) => {
+  .post(getUser, async (req, res, next) => {
     if (!req.body.title || !req.body.url) {
       return res.status(400).json({ message: 'Bring correct params' })
     }
 
     try {
-      const decodedToken = jwt.verify(req.token, process.env.SECRET)
-      const user = await User.findById(decodedToken.id)
+      const user = req.user
 
       req.body.user = user._id
       const blog = new Blog(req.body)
@@ -38,16 +36,9 @@ router
 
 router
   .route('/:id')
-  .delete(async (req, res, next) => {
+  .delete(getUser, checkId, async (req, res, next) => {
     try {
-      const currUser = jwt.verify(req.token, process.env.SECRET)
       const blogToDelete = await Blog.findById(req.params.id)
-
-      if (!(currUser.id.toString() === blogToDelete.user.toString())) {
-        return res.status(403).json({
-          error: 'unauthorised'
-        })
-      }
 
       await blogToDelete.remove()
       res.status(204).end()
